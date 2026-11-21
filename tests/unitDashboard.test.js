@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { Op } from 'sequelize';
 import { summarizeUnitDashboard, createUnitDashboardService } from '../services/unitDashboard.js';
 
 test('saldo pagu dipakai langsung tanpa dikurangi pengajuan dua kali', () => {
@@ -39,15 +40,15 @@ test('dashboard kosong menghasilkan saldo dan semua status nol', () => {
 test('query dashboard memakai unit sesi dan cakupan pemeriksaan dalam satu transaksi', async () => {
     for (const role of ['operator', 'pimpinan_unit']) {
         const transaction = {};
-        const inOperator = Symbol('in');
+        const inOperator = Op.in;
         const db = { transaction: run => run(transaction) };
         const verify = options => { assert.equal(options.transaction, transaction); assert.equal(options.where.kode_unit_kerja, 7); };
         const units = { async findOne(options) { verify(options); return { kode_unit_kerja: 7, unit_kerja: 'Jurusan Mesin' }; } };
         const pagus = { async findAll(options) { verify(options); return []; } };
         const pengajuans = { async findAll(options) {
             verify(options);
-            if (role === 'pimpinan_unit') assert.deepEqual(options.where.current_position[inOperator], ['pimpinan_unit', 'tim_sakip', 'spi', 'kpa', 'completed']);
-            else assert.equal(options.where.current_position, undefined);
+            if (role === 'pimpinan_unit') assert.deepEqual(options.where.max_position[inOperator], ['pimpinan_unit', 'tim_sakip', 'spi', 'kpa', 'completed']);
+            else assert.equal(options.where.max_position, undefined);
             return [];
         } };
         const data = await createUnitDashboardService({ db, units, pagus, pengajuans, inOperator })({ role, kodeUnitKerja: 7 });

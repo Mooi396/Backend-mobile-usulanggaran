@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/deleteUnit.test.js tests/masterSatuan.test.js tests/masterAkun.test.js tests/paguScope.test.js tests/paguWrite.test.js tests/pengajuanScope.test.js tests/submitPengajuan.test.js tests/unitDashboard.test.js tests/verifyPengajuan.test.js tests/resubmitPengajuan.test.js",
+    "test": "node --test tests/deleteUnit.test.js tests/masterSatuan.test.js tests/masterAkun.test.js tests/paguScope.test.js tests/paguWrite.test.js tests/pengajuanScope.test.js tests/submitPengajuan.test.js tests/unitDashboard.test.js tests/verifyPengajuan.test.js tests/resubmitPengajuan.test.js tests/guidebook.test.js",
     "start": "node index.js"
   },
   "keywords": [],

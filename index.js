@@ -35,6 +35,7 @@ import UnitKerjas from "./models/UnitKerjaModel.js";
 import { fillOfficialUnitCodes } from "./services/unitCodes.js";
 import AuditLogRoute from "./routes/AuditLogRoute.js";
 import { auditManagement } from "./services/auditLog.js";
+import GuidebookRoute from "./routes/GuidebookRoute.js";
 
 const app = express();
 const SequelizeStoreSession = SequelizeStore(session.Store);
@@ -96,6 +97,7 @@ app.use(SubkomponenRoute);
 app.use(SuboutputRoute);
 app.use(UnitKerjaRoute);
 app.use(DashboardRoute);
+app.use(GuidebookRoute);
 
 // 404 Handler
 app.use((req, res) => {
