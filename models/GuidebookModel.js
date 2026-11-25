@@ -19,11 +19,19 @@ const Guidebooks = db.define(
                 notEmpty: true,
             },
         },
-        gambar: {
-            type: DataTypes.JSON,
-            allowNull: false,
+        image: {
+            type: DataTypes.STRING,
+            allowNull: true, // opsional jika hanya ingin gambar per subjudul
         },
-        kategori: {
+        url: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        kesimpulan: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        role: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {

@@ -4,8 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import session from "express-session";
 import SequelizeStore from "connect-session-sequelize";
-// import FileUpload from "express-fileupload";
-import jwt from "jsonwebtoken";
+import FileUpload from "express-fileupload";
 
 // Import Routes
 import AkunRoute from "./routes/AkunRoute.js";
@@ -29,13 +28,14 @@ import SubkomponenRoute from "./routes/SubKomponenRoute.js";
 import SuboutputRoute from "./routes/SuboutputRoute.js";
 import UnitKerjaRoute from "./routes/UnitKerjaRoute.js";
 import DashboardRoute from "./routes/DashboardRoute.js";
+import AuditLogRoute from "./routes/AuditLogRoute.js";
+import GuidebookRoute from "./routes/GuidebookRoute.js";
+import GuidebookSectionRoute from "./routes/GuidebookSectionRoute.js";
 
 import db from "./config/Database.js";
 import UnitKerjas from "./models/UnitKerjaModel.js";
 import { fillOfficialUnitCodes } from "./services/unitCodes.js";
-import AuditLogRoute from "./routes/AuditLogRoute.js";
 import { auditManagement } from "./services/auditLog.js";
-import GuidebookRoute from "./routes/GuidebookRoute.js";
 
 const app = express();
 const SequelizeStoreSession = SequelizeStore(session.Store);
@@ -54,10 +54,10 @@ app.use(
     saveUninitialized: false,
     store: store,
     cookie: {
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production",
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 24 * 60 * 60 * 1000
+      maxAge: 24 * 60 * 60 * 1000,
     },
   })
 );
@@ -69,8 +69,9 @@ app.use(
   })
 );
 
-// app.use(FileUpload());
+app.use(FileUpload());
 app.use(express.json());
+app.use("/storage", express.static("storage"));
 
 app.use(auditManagement);
 
@@ -98,12 +99,13 @@ app.use(SuboutputRoute);
 app.use(UnitKerjaRoute);
 app.use(DashboardRoute);
 app.use(GuidebookRoute);
+app.use(GuidebookSectionRoute);
 
 // 404 Handler
 app.use((req, res) => {
   res.status(404).json({
-    status: 'error',
-    message: 'Ups! Endpoint API atau rute tidak ditemukan.',
+    status: "error",
+    message: "Ups! Endpoint API atau rute tidak ditemukan.",
   });
 });
 
@@ -118,7 +120,7 @@ const PORT = process.env.PORT || process.env.APP_PORT || 5000;
     // Sinkronisasi session store
     await store.sync();
 
-    // Sinkronisasi database model (menggabungkan db.sync dan listen dalam satu alur)
+    // Sinkronisasi database model
     await db.sync({ alter: true });
     await fillOfficialUnitCodes(UnitKerjas);
     console.log("Database synchronized successfully.");
@@ -126,7 +128,6 @@ const PORT = process.env.PORT || process.env.APP_PORT || 5000;
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
-
   } catch (error) {
     console.error("Failed to connect database or start server:", error);
   }
